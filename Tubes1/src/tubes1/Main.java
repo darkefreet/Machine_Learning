@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package tubes1;
+import Helper.*;
+import java.io.IOException;
 
 /**
  *
@@ -14,8 +16,9 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // TODO code application logic here
+        csvToArff convert = new csvToArff("weather_csv.csv");
     }
     
 }
