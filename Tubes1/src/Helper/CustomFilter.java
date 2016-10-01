@@ -32,6 +32,9 @@ public class CustomFilter {
         ru.setInputFormat(structure);
         structure = Filter.useFilter(structure, ru);
         
+        Ranker rank = new Ranker();
+        InfoGainAttributeEval eval = new InfoGainAttributeEval();
+        eval.buildEvaluator(structure);
         //END OF NORMALIZATION
         
         return structure;
