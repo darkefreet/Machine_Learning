@@ -15,12 +15,11 @@ import weka.core.converters.CSVLoader;
  *
  * @author Hp
  */
-public class csvToArff {
-    public csvToArff(String filename) throws IOException{
+public class CsvToArff {
+    public CsvToArff(String filename) throws IOException{
         // load CSV
         CSVLoader loader = new CSVLoader();
-        String source = "../"+filename;
-        URL url = getClass().getResource(source);
+        URL url = getClass().getResource("../"+filename);
         loader.setSource(new File(url.getPath()));
         Instances data = loader.getDataSet();
 
