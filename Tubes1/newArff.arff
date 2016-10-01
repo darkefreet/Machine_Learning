@@ -1,0 +1,22 @@
+@relation weather-weka.filters.unsupervised.attribute.Remove-R2
+
+@attribute outlook {sunny,overcast,rainy}
+@attribute humidity numeric
+@attribute windy {TRUE,FALSE}
+@attribute play {yes,no}
+
+@data
+sunny,85,FALSE,no
+sunny,90,TRUE,no
+overcast,86,FALSE,yes
+rainy,96,FALSE,yes
+rainy,80,FALSE,yes
+rainy,70,TRUE,no
+overcast,65,TRUE,yes
+sunny,95,FALSE,no
+sunny,70,FALSE,yes
+rainy,80,FALSE,yes
+sunny,70,TRUE,yes
+overcast,90,TRUE,yes
+overcast,75,FALSE,yes
+rainy,91,TRUE,no

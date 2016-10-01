@@ -16,9 +16,10 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, Exception {
         // TODO code application logic here
         csvToArff convert = new csvToArff("weather_csv.csv");
+        AttributeRemover.remove("weather.arff", "2");
     }
     
 }
