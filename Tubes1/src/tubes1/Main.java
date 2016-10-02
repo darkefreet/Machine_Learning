@@ -10,10 +10,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.*;
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
 import weka.classifiers.trees.SimpleCart;
+import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
@@ -34,20 +38,39 @@ public class Main {
     }
     
     public static Instances[][] crossValidationSplit(Instances data, int numberOfFolds) {
-            Instances[][] split = new Instances[2][numberOfFolds];
-            for (int i = 0; i < numberOfFolds; i++) {
-                    split[0][i] = data.trainCV(numberOfFolds, i);
-                    split[1][i] = data.testCV(numberOfFolds, i);
-            }
-            return split;
+        Instances[][] split = new Instances[2][numberOfFolds];
+        for (int i = 0; i < numberOfFolds; i++) {
+                split[0][i] = data.trainCV(numberOfFolds, i);
+                split[1][i] = data.testCV(numberOfFolds, i);
+        }
+        return split;
     }
+    
+    public static Evaluation classify(Classifier model,Instances trainingSet, Instances testingSet) throws Exception {
+        Evaluation evaluation = new Evaluation(trainingSet);
+        model.buildClassifier(trainingSet);
+        evaluation.evaluateModel(model, testingSet);
+        return evaluation;
+    }
+    
+    public static double calculateAccuracy(FastVector predictions) {
+        double correct = 0;
+        for (int i = 0; i < predictions.size(); i++) {
+                NominalPrediction np = (NominalPrediction) predictions.elementAt(i);
+                if (np.predicted() == np.actual()) {
+                        correct++;
+                }
+        }
+        return 100 * correct / predictions.size();
+    }
+    
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, Exception {
         // TODO code application logic here
-        csvToArff convert = new csvToArff("weather_csv.csv");
+        CsvToArff convert = new CsvToArff("weather_csv.csv");
         String filename = "weather";
         
         //Masih belum mengerti tipe .csv yang dapat dibaca seperti apa
@@ -60,13 +83,15 @@ public class Main {
         //END OF LOAD FILE
         
         CustomFilter fil = new CustomFilter();
+        data = fil.convertNumericToNominal(data);
+        System.out.println(data);
         
         //REMOVE USELESS ATTRIBUTE
         data = fil.removeAttribute(data);
         
         //RESAMPLING
         data = fil.resampling(data);
-        System.out.println(data);
+        //System.out.println(data);
         
         //FOR TEN-FOLD CROSS VALIDATION
         Instances[][] split = crossValidationSplit(data, 10);
@@ -79,6 +104,30 @@ public class Main {
             new J48(), //C4.5
             new Id3() //ID3
         };
+        
+        for (int j = 0; j < models.length; j++) {
+            FastVector predictions = new FastVector();
+            for (int i = 0; i < trainingSplits.length; i++) {
+                try {
+                    System.out.println("Building for training Split : " + i);
+                    Evaluation validation = classify(models[j], trainingSplits[i], testingSplits[i]);
+
+                    predictions.appendElements(validation.predictions());
+
+                    // Uncomment to see the summary for each training-testing pair.
+                    System.out.println(models[j].toString());
+                } catch (Exception ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                // Calculate overall accuracy of current classifier on all splits
+                double accuracy = calculateAccuracy(predictions);
+
+                // Print current classifier's name and accuracy in a complicated,
+                // but nice-looking way.
+                System.out.println("Accuracy of " + models[j].getClass().getSimpleName() + ": "
+                                + String.format("%.2f%%", accuracy)
+                                + "\n---------------------------------");
+            }
+        }
     }
-    
 }

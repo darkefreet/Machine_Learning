@@ -12,6 +12,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.RemoveUseless;
 import weka.filters.supervised.instance.Resample;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 /**
  *
@@ -54,4 +55,16 @@ public class CustomFilter {
 	}
 	return filteredIns;
     }
+    
+    public Instances convertNumericToNominal(Instances structure) throws Exception {
+        NumericToNominal convert= new NumericToNominal();
+        String[] options= new String[2];
+        options[0]="-R";
+        options[1]= "1-" + structure.numAttributes();
+        convert.setOptions(options);
+        convert.setInputFormat(structure);
+        structure = Filter.useFilter(structure, convert);
+        return structure;
+    }
+
 }
