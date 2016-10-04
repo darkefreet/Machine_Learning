@@ -6,20 +6,19 @@
 package tubes1;
 import Helper.*;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.logging.*;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
-import weka.classifiers.trees.SimpleCart;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.converters.ArffLoader;
 
 /**
  *
@@ -70,7 +69,6 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, Exception {
         // TODO code application logic here
-        CsvToArff convert = new CsvToArff("weather_csv.csv");
         String filename = "weather";
         
         //Masih belum mengerti tipe .csv yang dapat dibaca seperti apa
@@ -79,19 +77,23 @@ public class Main {
         //LOAD FILE
         BufferedReader datafile = readDataFile("src/"+filename+".arff");
         Instances data = new Instances(datafile);
-        data.setClassIndex(0);
+        data.setClassIndex(data.numAttributes()-1);
         //END OF LOAD FILE
         
         CustomFilter fil = new CustomFilter();
+        
+        //CONVERT TO NOMINAL
+        data = fil.convertNumericRange(data);
+//        System.out.println(data);
         data = fil.convertNumericToNominal(data);
-        System.out.println(data);
+//        System.out.println(data);
         
         //REMOVE USELESS ATTRIBUTE
         data = fil.removeAttribute(data);
         
         //RESAMPLING
         data = fil.resampling(data);
-        //System.out.println(data);
+        System.out.println(data);
         
         //FOR TEN-FOLD CROSS VALIDATION
         Instances[][] split = crossValidationSplit(data, 10);
@@ -115,7 +117,7 @@ public class Main {
                     predictions.appendElements(validation.predictions());
 
                     // Uncomment to see the summary for each training-testing pair.
-                    System.out.println(models[j].toString());
+//                    System.out.println(models[j].toString());
                 } catch (Exception ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -129,5 +131,16 @@ public class Main {
                                 + "\n---------------------------------");
             }
         }
+        
+        //test instance
+        Instance testInstance = new Instance(data.numAttributes());
+        for(int i = 0; i<data.numAttributes()-1;i++){
+            System.out.print("Masukkan "+ data.attribute(i).name()+" : ");
+            Scanner in = new Scanner(System.in);
+            System.out.println(data.attribute(i).typeToString(data.attribute(i)));
+//            String att = in.nextLine();
+//            testInstance.setValue(data.attribute(i),att);
+        }
+//        System.out.println(testInstance);
     }
 }
