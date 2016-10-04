@@ -47,9 +47,10 @@ public class myID3 extends Classifier {
         TreeNode treeNode = new TreeNode();
         
         int [] count = calculateCount(i);
-        for (int c : count){
-            if (count[c] == i.numInstances()){
-               treeNode.label = c;
+        for (int j=0;j<count.length;j++){
+            int c = count[j];
+            if (c == i.numInstances()){
+               treeNode.label = j;
                return treeNode;
             }
         }
