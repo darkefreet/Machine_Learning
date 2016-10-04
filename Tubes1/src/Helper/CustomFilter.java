@@ -7,6 +7,7 @@ package Helper;
 
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
@@ -64,6 +65,32 @@ public class CustomFilter {
         convert.setOptions(options);
         convert.setInputFormat(structure);
         structure = Filter.useFilter(structure, convert);
+        return structure;
+    }
+    
+    public Instances convertNumericRange(Instances structure) throws Exception{
+        for(int i = 0; i<structure.numAttributes()-1;i++){
+            if(structure.attribute(i).typeToString(structure.attribute(i)).equals("numeric")){
+                structure.sort(i);
+                structure = toRange(structure,i);
+            }    
+        }
+        return structure;
+    }
+    
+    //SET ALL VALUES TO THE BATAS BAWAH
+    private Instances toRange(Instances structure,int index)throws Exception{
+        Attribute attr = structure.attribute(index);
+        Attribute classlabel = structure.attribute(structure.numAttributes()-1);
+        String label = structure.instance(0).stringValue(classlabel);
+        double threshold = structure.instance(0).value(index);
+        for(int i = 0; i<structure.numInstances();i++){
+            if(!structure.instance(i).stringValue(classlabel).equals(label)){
+                label = structure.instance(i).stringValue(classlabel);
+                threshold = structure.instance(i).value(index);
+            }
+            structure.instance(i).setValue(attr, threshold);
+        }
         return structure;
     }
 
