@@ -6,6 +6,7 @@
 package tubes1.myClassifiers;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Enumeration;
@@ -20,9 +21,9 @@ import weka.core.Instances;
  *
  * @author nim_13512501
  */
-public class myID3 extends Classifier {
+public class myID3 extends Classifier implements Serializable {
     
-    private class TreeNode{
+    private class TreeNode implements Serializable{
         public Attribute decision;
         public double branchValue;
         public int label;
@@ -38,6 +39,23 @@ public class myID3 extends Classifier {
         }
         public boolean isLeafNode(){
             return label >= 0;
+        }
+        public String stringify(int tabLevel){
+            String retval = "";
+            for (int i=0;i<tabLevel;i++){
+                retval+='\t';
+            }
+            retval+=branchValue;
+            retval+="-";
+            if (isLeafNode())
+                retval+=label;
+            else
+                retval+=decision.name();
+            retval+='\n';
+            for (TreeNode branch : branches){
+                retval+=branch.stringify(tabLevel+1);
+            }
+            return retval;
         }
     }
     
@@ -191,7 +209,7 @@ public class myID3 extends Classifier {
         double result = 0;
         double[] proportion = calculateProportion(instances);
         for (double p : proportion){
-            if (p>0)
+            if (p!=0)
                 result -= Math.log(p)/Math.log(2)*p;
         }
         return result;
@@ -220,7 +238,7 @@ public class myID3 extends Classifier {
         int [] num = calculateCount(instances);
         double [] result = new double[numClasses];
         for (int i=0;i<numClasses;i++){
-            result[i] = num[i]/numInstances;
+            result[i] = ((double)num[i])/numInstances;
         }
         return result;
     }
@@ -235,5 +253,9 @@ public class myID3 extends Classifier {
       }
     return null;
   }
+    
+    public String toString(){
+        return rootNode.stringify(0);
+    }
 
 }
