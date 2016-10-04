@@ -55,6 +55,19 @@ public class myID3 extends Classifier {
             }
         }
         
+        if (i.numAttributes()<=1){
+            int maxc = -1;
+            int maxcj = -1;
+            for (int j=0;j<count.length;j++){
+                if (count[j]>maxc){
+                    maxc=count[j];
+                    maxcj = j;
+                }
+            }
+            treeNode.label = maxcj;
+            return treeNode;
+        }
+        
         Attribute bestA = null;
         double bestAIG = -1;
         double entropyOfSet = entropy(i);
@@ -75,7 +88,9 @@ public class myID3 extends Classifier {
                 double attributeValue = subSet.firstInstance().value(bestA);
                 subSet.deleteAttributeAt(bestA.index());
                 TreeNode newBranch = id3Node(subSet);
+                newBranch.branchValue = attributeValue;
                 treeNode.addBranch(newBranch);
+            }else{ 
             }
         }
         return treeNode;
@@ -116,7 +131,7 @@ public class myID3 extends Classifier {
                 }
             }
             if (!branchFound){
-                return -1;
+                return 0;
             }
         }
         return nodeIter.label;
@@ -176,7 +191,8 @@ public class myID3 extends Classifier {
         double result = 0;
         double[] proportion = calculateProportion(instances);
         for (double p : proportion){
-            result -= Math.log(p)/Math.log(2)*p;
+            if (p>0)
+                result -= Math.log(p)/Math.log(2)*p;
         }
         return result;
     }
@@ -191,7 +207,8 @@ public class myID3 extends Classifier {
         }
         for (int i=0;i<numInstances;i++){
             Instance instance = instances.instance(i);
-            int classIndex = instance.classIndex();
+            double classValue = instance.value(instance.classAttribute());
+            int classIndex = (int) classValue;
             num[classIndex]++;
         }
         return num;
