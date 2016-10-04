@@ -93,5 +93,19 @@ public class CustomFilter {
         }
         return structure;
     }
+    
+    public String convertToFit(String value, Instances data, int index){
+        int i;
+        String threshold = data.attribute(index).value(0);
+        for(i = 0; i < data.numDistinctValues(data.attribute(index)) ;i++){
+            if(Float.valueOf(value)<Float.valueOf(data.attribute(index).value(i))){
+                value = threshold;
+                return value;
+            }
+            threshold = data.attribute(index).value(i);
+        }
+        value = threshold;
+        return value;
+    }
 
 }

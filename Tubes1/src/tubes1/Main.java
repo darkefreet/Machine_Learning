@@ -26,6 +26,9 @@ import weka.core.Instances;
  */
 public class Main {
 
+    public static boolean isNumeric(String s) {  
+        return s.matches("[-+]?\\d*\\.?\\d+");  
+    }  
     public static BufferedReader readDataFile(String filename) {
         BufferedReader inputReader = null;
         try {
@@ -130,17 +133,49 @@ public class Main {
                                 + String.format("%.2f%%", accuracy)
                                 + "\n---------------------------------");
             }
+            models[j].buildClassifier(data);
+            Model.save(models[j],models[j].getClass().getSimpleName());
         }
         
+        
         //test instance
+        Instances trainingSet = new Instances("Rel", getFvWekaAttributes(data), 10);
+        trainingSet.setClassIndex(data.numAttributes() - 1);
+
         Instance testInstance = new Instance(data.numAttributes());
         for(int i = 0; i<data.numAttributes()-1;i++){
             System.out.print("Masukkan "+ data.attribute(i).name()+" : ");
             Scanner in = new Scanner(System.in);
-            System.out.println(data.attribute(i).typeToString(data.attribute(i)));
-//            String att = in.nextLine();
-//            testInstance.setValue(data.attribute(i),att);
+            String att = in.nextLine();
+            if(isNumeric(att)){
+                att = fil.convertToFit(att, data, i);
+            }
+            testInstance.setValue(data.attribute(i),att);
         }
-//        System.out.println(testInstance);
+
+        System.out.println(testInstance);
+//        System.out.println(testInstance.classAttribute().index());
+        trainingSet.add(testInstance);
+
+        Classifier Id3 = Model.load("Id3");
+        Classifier J48 = Model.load("J48");
+
+        //test with ID3 WEKA
+        trainingSet.instance(0).setClassValue(Id3.classifyInstance(trainingSet.instance(0)));
+        System.out.println("Id3 Weka : " + trainingSet.instance(0));
+        
+        //test with C4.5 WEKA
+        trainingSet.instance(0).setClassValue(J48.classifyInstance(trainingSet.instance(0)));
+        System.out.println("C4.5 Weka : " +trainingSet.instance(0));
     }
+    
+    private static FastVector getFvWekaAttributes(Instances data) {
+        int numAttributes = data.numAttributes();
+        FastVector fvWekaAttributes = new FastVector(numAttributes);
+        for (int i = 0; i < numAttributes; i++) {
+            fvWekaAttributes.addElement(data.attribute(i));
+        }
+        return fvWekaAttributes;
+    }
+    
 }
