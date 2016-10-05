@@ -163,6 +163,7 @@ public class Main {
         Classifier Id3 = Model.load("Id3");
         Classifier J48 = Model.load("J48");
         Classifier MyC45 = Model.load("myC45");
+//        Classifier MyId3 = Model.load("myID3");
 
         Instance A = trainingSet.instance(0);
         Instance B = trainingSet.instance(0);
@@ -180,6 +181,10 @@ public class Main {
         //test with my C4.5
         C.setClassValue(MyC45.classifyInstance(trainingSet.instance(0)));
         System.out.println("My C4.5 : " + C);
+        
+        //test with my C4.5
+//        D.setClassValue(MyId3.classifyInstance(trainingSet.instance(0)));
+//        System.out.println("My ID3  : " + C);
     }
     
     private static FastVector getFvWekaAttributes(Instances data) {
