@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.*;
+import tubes1.myClassifiers.myC45;
+import tubes1.myClassifiers.myID3;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.NominalPrediction;
@@ -107,7 +109,9 @@ public class Main {
         // BUILD CLASSIFIERS
         Classifier[] models = { 
             new J48(), //C4.5
-            new Id3() //ID3
+            new Id3(),
+            new myC45(),
+            new myID3()//ID3
         };
         
         for (int j = 0; j < models.length; j++) {
@@ -134,7 +138,7 @@ public class Main {
                                 + "\n---------------------------------");
             }
             models[j].buildClassifier(data);
-            Model.save(models[j],models[j].getClass().getSimpleName());
+//            Model.save(models[j],models[j].getClass().getSimpleName());
         }
         
         
