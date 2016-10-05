@@ -110,8 +110,7 @@ public class Main {
         Classifier[] models = { 
             new J48(), //C4.5
             new Id3(),
-            new myC45(),
-            new myID3()//ID3
+            new myC45()
         };
         
         for (int j = 0; j < models.length; j++) {
@@ -138,7 +137,7 @@ public class Main {
                                 + "\n---------------------------------");
             }
             models[j].buildClassifier(data);
-//            Model.save(models[j],models[j].getClass().getSimpleName());
+            Model.save(models[j],models[j].getClass().getSimpleName());
         }
         
         
@@ -163,14 +162,24 @@ public class Main {
 
         Classifier Id3 = Model.load("Id3");
         Classifier J48 = Model.load("J48");
+        Classifier MyC45 = Model.load("myC45");
 
-        //test with ID3 WEKA
-        trainingSet.instance(0).setClassValue(Id3.classifyInstance(trainingSet.instance(0)));
-        System.out.println("Id3 Weka : " + trainingSet.instance(0));
+        Instance A = trainingSet.instance(0);
+        Instance B = trainingSet.instance(0);
+        Instance C = trainingSet.instance(0);
+        Instance D = trainingSet.instance(0);
+        
+//test with ID3 WEKA
+        A.setClassValue(Id3.classifyInstance(trainingSet.instance(0)));
+        System.out.println("Id3 Weka : " + A);
         
         //test with C4.5 WEKA
-        trainingSet.instance(0).setClassValue(J48.classifyInstance(trainingSet.instance(0)));
-        System.out.println("C4.5 Weka : " +trainingSet.instance(0));
+        B.setClassValue(J48.classifyInstance(trainingSet.instance(0)));
+        System.out.println("C4.5 Weka : " + B);
+        
+        //test with my C4.5
+        C.setClassValue(MyC45.classifyInstance(trainingSet.instance(0)));
+        System.out.println("My C4.5 : " + C);
     }
     
     private static FastVector getFvWekaAttributes(Instances data) {
