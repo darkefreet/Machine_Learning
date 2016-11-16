@@ -12,5 +12,5 @@ import weka.core.Instance;
  * @author nim_13512501
  */
 public interface DistanceFunction {
-    double distanceOf(Instance a, Instance b);
+    double distanceOf(Instance a, Instance b) throws Exception;
 }

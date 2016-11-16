@@ -20,6 +20,10 @@ public class myKMeans extends weka.clusterers.AbstractClusterer {
         this.k = k;
         this.distanceFunction = distanceFunction;
     }
+    public myKMeans(int k){
+        this.k = k;
+        this.distanceFunction = new EuclideanDistance();
+    }
     
         Instance [] clusters;
     

@@ -20,6 +20,10 @@ public class myKMedoids extends weka.clusterers.AbstractClusterer{
         this.k = k;
         this.distanceFunction = distanceFunction;
     }
+    public myKMedoids(int k){
+        this.k = k;
+        this.distanceFunction = new EuclideanDistance();
+    }
     
     @Override
     public int clusterInstance(Instance instance)
