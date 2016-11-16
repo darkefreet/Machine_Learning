@@ -15,8 +15,10 @@ import weka.core.Instances;
 public class myKMedoids extends weka.clusterers.AbstractClusterer{
     
     int k;
-    public myKMedoids(int k){
+    DistanceFunction distanceFunction;
+    public myKMedoids(int k, DistanceFunction distanceFunction){
         this.k = k;
+        this.distanceFunction = distanceFunction;
     }
     
     @Override

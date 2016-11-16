@@ -15,9 +15,13 @@ import weka.core.Instances;
 public class myKMeans extends weka.clusterers.AbstractClusterer {
     
     int k;
-    public myKMeans(int k){
+    DistanceFunction distanceFunction;
+    public myKMeans(int k, DistanceFunction distanceFunction){
         this.k = k;
+        this.distanceFunction = distanceFunction;
     }
+    
+        Instance [] clusters;
     
     @Override
     public int clusterInstance(Instance instance)
