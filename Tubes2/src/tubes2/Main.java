@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import tubes2.myClusterers.myAgnes;
 import tubes2.myClusterers.myKMeans;
 import weka.clusterers.Clusterer;
 import weka.clusterers.SimpleKMeans;
@@ -48,7 +49,8 @@ public class Main {
         
         Clusterer [] clusterers = {
             new SimpleKMeans(),
-            new myKMeans(4)
+            new myKMeans(4),
+            new myAgnes(4)
         };
         
         for (Clusterer clusterer: clusterers){
