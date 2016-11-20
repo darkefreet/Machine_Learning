@@ -25,10 +25,10 @@ public class CustomFilter {
     }
     
     public Instances removeAttribute(Instances structure) throws Exception{
-        //NORMALIZE AND REMOVE USELESS ATTRIBUTES
-        Normalize norm = new Normalize();
-        norm.setInputFormat(structure);
-        structure = Filter.useFilter(structure, norm);
+//        //NORMALIZE AND REMOVE USELESS ATTRIBUTES
+//        Normalize norm = new Normalize();
+//        norm.setInputFormat(structure);
+//        structure = Filter.useFilter(structure, norm);
 
         RemoveUseless ru = new RemoveUseless();
         ru.setInputFormat(structure);
@@ -98,6 +98,8 @@ public class CustomFilter {
         int i;
         String threshold = data.attribute(index).value(0);
         for(i = 0; i < data.numDistinctValues(data.attribute(index)) ;i++){
+//            System.out.println(value);
+//            System.out.println(data.attribute(index).value(i));
             if(Float.valueOf(value)<Float.valueOf(data.attribute(index).value(i))){
                 value = threshold;
                 return value;

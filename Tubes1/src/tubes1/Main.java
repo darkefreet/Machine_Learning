@@ -87,38 +87,40 @@ public class Main {
         
         CustomFilter fil = new CustomFilter();
         
-        //CONVERT TO NOMINAL
-        data = fil.convertNumericRange(data);
-//        System.out.println(data);
-        data = fil.convertNumericToNominal(data);
-//        System.out.println(data);
-        
         //REMOVE USELESS ATTRIBUTE
         data = fil.removeAttribute(data);
-        
-        //RESAMPLING
-        data = fil.resampling(data);
         System.out.println(data);
         
-        //FOR TEN-FOLD CROSS VALIDATION
-        Instances[][] split = crossValidationSplit(data, 10);
-        // Separate split into training and testing arrays
-        Instances[] trainingSplits = split[0];
-        Instances[] testingSplits = split[1];
-
+        Instances[] allData = new Instances[4];
+        //data for Id3
+        allData[0] = fil.resampling(fil.convertNumericToNominal(data));
+        //data for J48
+        allData[1] = fil.convertNumericToNominal(fil.resampling(data));
+        //data for myId3
+        allData[2] = allData[0];        
+        //data for myC4.5
+        allData[3] = fil.resampling(fil.convertNumericToNominal(fil.convertNumericRange(data)));
+        
+        data = fil.convertNumericToNominal(data);
         // BUILD CLASSIFIERS
         Classifier[] models = { 
-            new J48(), //C4.5
-            new Id3(),
+            new Id3(), //C4.5
+            new J48(),
             new myID3(),
             new myC45()
         };
         
         for (int j = 0; j < models.length; j++) {
             FastVector predictions = new FastVector();
+            //FOR TEN-FOLD CROSS VALIDATION
+            Instances[][] split = crossValidationSplit(allData[j], 10);
+            // Separate split into training and testing arrays
+            Instances[] trainingSplits = split[0];
+            Instances[] testingSplits = split[1];
+            System.out.println("\n---------------------------------");
             for (int i = 0; i < trainingSplits.length; i++) {
                 try {
-                    System.out.println("Building for training Split : " + i);
+//                    System.out.println("Building for training Split : " + i);
                     Evaluation validation = classify(models[j], trainingSplits[i], testingSplits[i]);
 
                     predictions.appendElements(validation.predictions());
@@ -133,11 +135,10 @@ public class Main {
 
                 // Print current classifier's name and accuracy in a complicated,
                 // but nice-looking way.
-                System.out.println("Accuracy of " + models[j].getClass().getSimpleName() + ": "
-                                + String.format("%.2f%%", accuracy)
-                                + "\n---------------------------------");
+                System.out.println(String.format("%.2f%%", accuracy)
+                );
             }
-            models[j].buildClassifier(data);
+            models[j].buildClassifier(allData[j]);
             Model.save(models[j],models[j].getClass().getSimpleName());
         }
         
@@ -157,8 +158,10 @@ public class Main {
             testInstance.setValue(data.attribute(i),att);
         }
 
-        System.out.println(testInstance);
+//        System.out.println(testInstance);
 //        System.out.println(testInstance.classAttribute().index());
+    
+    
         trainingSet.add(testInstance);
 
         Classifier Id3 = Model.load("Id3");

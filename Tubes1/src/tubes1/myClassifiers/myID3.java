@@ -6,6 +6,7 @@
 package tubes1.myClassifiers;
 
 
+import Helper.CustomFilter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
