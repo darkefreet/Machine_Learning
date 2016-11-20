@@ -80,7 +80,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, Exception {
         // TODO code application logic here
         String filename = "weather";
         
@@ -106,12 +106,15 @@ public class Main {
         
         //END OF LOAD FILE
         
+        SimpleKMeans simpleK = new SimpleKMeans();
+        simpleK.setNumClusters(4);
         Clusterer [] clusterers = {
-            new SimpleKMeans(),
+            simpleK,
             new myKMeans(4),
             new myAgnes(4)
         };
         
+        boolean first = true;
         for (Clusterer clusterer: clusterers){
             try {
                 clusterer.buildClusterer(data);
