@@ -5,7 +5,8 @@
  */
 package tubes2.myClusterers;
 
-import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -60,6 +61,66 @@ public class myKMeans extends weka.clusterers.AbstractClusterer {
             }while(centroidIndexSet.contains(centroidIndex));
             
             centroids[j]=i.instance(centroidIndex);
+        }
+    }
+    
+    /**
+     * initializes centroids with the longest distances
+     * @param i 
+     */
+    public void initializeCentroidsDistance(Instances i) throws Exception{
+        int n = i.numInstances();
+        if (n<k)
+            throw new Exception("n<k");
+        centroids = new Instance[k];
+
+        //CARI RATA-RATA DARI K-1 DISTANCE TERTINGGI MASING-MASING SIMPUL
+        Double meanN[] = new Double[n];
+        Double allDistances[][] = new Double[n][n];
+        for(int a = 0; a<n;a++){
+            Double arr[] = new Double[n];
+            for(int b = 0; b<n; b++){
+                allDistances[a][b] = distanceFunction.distanceOf(i.instance(a),i.instance(b));
+                arr[b] = allDistances[a][b];
+            }
+            Arrays.sort(arr);
+            Double total = 0.0;
+            for(int c = 0; c<k-1;c++){
+                total+=arr[n-1-c];
+            }
+            meanN[a] = total / (k-1);
+        }
+        
+        //AMBIL RATA-RATA TERBESAR
+        Double max = meanN[0];
+        int indexMax = 0;
+        for(int a=1;a<n;a++){
+//            System.out.println(a + " bernilai "+ meanN[a]);
+            if(meanN[a]>max){
+                indexMax = a;
+                max = meanN[a];
+            }
+        }
+        System.out.println("index max " +indexMax);
+        
+        //AMBIL K-1 TITIK DARI SIMPUL DENGAN RATAAN JARAK TERBESAR
+        ArrayList<Integer> centroidPos = new ArrayList<Integer>();
+        Double temp[] = new Double[n];
+        temp = Arrays.copyOf(allDistances[indexMax],n);
+        Arrays.sort(temp);
+        centroidPos.add(indexMax);
+        for(int a=0;a<k-1;a++){
+            for(int b=0;b<n;b++){
+                if(temp[n-1-a]==allDistances[indexMax][b]){
+                    centroidPos.add(b);
+                    //so the element wont be picked again
+                    allDistances[indexMax][b] = -1.0;
+                    break;
+                }
+            }
+        }
+        for (int a=0;a<k;a++){
+            centroids[a] = i.instance(centroidPos.get(a));
         }
     }
     
@@ -145,7 +206,10 @@ public class myKMeans extends weka.clusterers.AbstractClusterer {
     @Override
     public void buildClusterer(Instances i) throws Exception {
         template = new Instances(i,0);
+        //DENGAN RANDOM
         initializeCentroids(i);
+        //TANPA RANDOM
+//        initializeCentroidsDistance(i);
         assignClusters(i);
         iter=0;
         do {
