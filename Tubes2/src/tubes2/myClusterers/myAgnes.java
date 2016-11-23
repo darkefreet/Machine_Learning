@@ -7,6 +7,7 @@ package tubes2.myClusterers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -47,7 +48,8 @@ public class myAgnes extends weka.clusterers.AbstractClusterer {
             return "myAgnes\n"
                     + "iterations:" + iter + "\n"
                     + "centroids:\n"
-                    + printClusters() + "\n";
+                    + printClusters() + "\n"
+                    + calculateError();
         } catch (Exception ex) {
             Logger.getLogger(myKMeans.class.getName()).log(Level.SEVERE, null, ex);
             return ex.toString();
@@ -147,5 +149,36 @@ public class myAgnes extends weka.clusterers.AbstractClusterer {
         return maxDistance;
     }
     
+    public String calculateError() throws Exception {
+        double totalError = 0;
+        clusters[3].delete(0);
+        for (int i = 0; i < clusters.length; i++) {
+            totalError += calculateClusterError(clusters[i]);
+        }
+        return "Total error: " + totalError;
+    }
+    
+    public double calculateClusterError(Instances cluster) throws Exception {
+        double clusterError = 0;
+        Instance centroid = getCentroid(cluster);
+        for (int i = 0; i < cluster.numInstances(); i++) {
+            clusterError += distanceFunction.distanceOf(cluster.instance(i), centroid);
+        }
+        System.out.println("Cluster Error: " + clusterError);
+        return clusterError;
+    }
+    
+    public Instance getCentroid(Instances cluster) {
+        Instance centroid = new Instance(cluster.numAttributes());
+        for (int i = 0; i < cluster.numAttributes(); i++){
+            double atrValueTotal = 0;
+            for (int j = 0; j < cluster.numInstances(); j++){
+                atrValueTotal += cluster.instance(j).value(i);
+            }
+            double atrValueMean = atrValueTotal / cluster.numInstances();
+            centroid.setValue(cluster.attribute(i), atrValueMean);
+        }
+        return centroid;
+    }
 
 }
